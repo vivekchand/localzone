@@ -15,6 +15,9 @@ public class Vendor {
     @Column(name = "phone")
     private String phone;
 
+    @Column(name = "validation_otp")
+    private String validationOtp;
+
     @Column(name = "address_line_1")
     private String addressLine1;
 
@@ -158,6 +161,14 @@ public class Vendor {
 
     public void setDeliveryByPartner(Boolean deliveryByPartner) {
         this.deliveryByPartner = deliveryByPartner;
+    }
+
+    public String getValidationOtp() {
+        return validationOtp;
+    }
+
+    public void setValidationOtp(String validationOtp) {
+        this.validationOtp = validationOtp;
     }
 }
 
