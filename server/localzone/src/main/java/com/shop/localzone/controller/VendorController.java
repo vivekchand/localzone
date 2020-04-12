@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.security.SecureRandom;
 import java.util.List;
 
@@ -55,8 +56,18 @@ public class VendorController {
         if(vendor.getValidationOtp().equals(vendorValidateRequest.getOtp())) {
             vendor.setValidated(true);
             vendorRepository.save(vendor);
-            return ResponseEntity.ok().body(new VendorValidationResponse(true));
+//            String jwtToken = jwtUtil.generateToken(vendor.getPhone());
+            return ResponseEntity.ok().body(new VendorValidationResponse(true, null));
         }
-        return ResponseEntity.badRequest().body(new VendorValidationResponse(false));
+        return ResponseEntity.badRequest().body(new VendorValidationResponse(false, null));
     }
+
+    // vendor details api
+    @PostMapping("vendor/details")
+    public ResponseEntity<VendorValidationResponse> vendorDetails(Principal principal) throws NotFoundException {
+        Vendor vendor = vendorRepository.findByPhone(principal.getName()).orElseThrow(() -> new NotFoundException("No such Vendor found!"));
+        return null;
+    }
+
+
 }
