@@ -1,13 +1,13 @@
 package com.shop.localzone.entity;
 
-public class VendorSignUp {
+public class VendorSignUpRequest {
     private String shopName;
     private String phoneNo;
 
-    public VendorSignUp() {
+    public VendorSignUpRequest() {
     }
 
-    public VendorSignUp(String shopName, String phoneNo) {
+    public VendorSignUpRequest(String shopName, String phoneNo) {
         this.shopName = shopName;
         this.phoneNo = phoneNo;
     }

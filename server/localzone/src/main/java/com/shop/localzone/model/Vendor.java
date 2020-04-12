@@ -18,6 +18,9 @@ public class Vendor {
     @Column(name = "validation_otp")
     private String validationOtp;
 
+    @Column(name = "is_validated")
+    private Boolean isValidated;
+
     @Column(name = "address_line_1")
     private String addressLine1;
 
@@ -169,6 +172,14 @@ public class Vendor {
 
     public void setValidationOtp(String validationOtp) {
         this.validationOtp = validationOtp;
+    }
+
+    public Boolean getValidated() {
+        return isValidated;
+    }
+
+    public void setValidated(Boolean validated) {
+        isValidated = validated;
     }
 }
 

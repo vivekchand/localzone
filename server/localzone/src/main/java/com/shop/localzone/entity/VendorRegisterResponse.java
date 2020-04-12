@@ -1,11 +1,11 @@
 package com.shop.localzone.entity;
 
 public class VendorRegisterResponse {
-    private Long id;
+    private Long vendorId;
     private String msg;
 
-    public VendorRegisterResponse(Long id) {
-        this.id = id;
+    public VendorRegisterResponse(Long vendorId) {
+        this.vendorId = vendorId;
         this.msg = "Validate sent OTP!";
     }
 
@@ -17,11 +17,11 @@ public class VendorRegisterResponse {
         this.msg = msg;
     }
 
-    public Long getId() {
-        return id;
+    public Long getVendorId() {
+        return vendorId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setVendorId(Long vendorId) {
+        this.vendorId = vendorId;
     }
 }
