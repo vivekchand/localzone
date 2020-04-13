@@ -2,14 +2,16 @@ package com.shop.localzone.controller;
 
 import com.shop.localzone.JwtUtil;
 import com.shop.localzone.entity.*;
+import com.shop.localzone.model.Customer;
+import com.shop.localzone.model.CustomerRequest;
 import com.shop.localzone.model.Vendor;
+import com.shop.localzone.repository.CustomerRepository;
 import com.shop.localzone.repository.VendorRepository;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,11 +23,43 @@ public class PublicController {
     private JwtUtil jwtUtil;
 
     @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
     private VendorRepository vendorRepository;
 
     // vendor register api
+    @PostMapping("customer/register")
+    public ResponseEntity<RegisterResponse> signUpCustomer(@RequestBody CustomerRequest customerRequest) {
+        Customer customer = new Customer();
+        customer.setName(customerRequest.getName());
+        customer.setPhone(customerRequest.getPhone());
+
+        SecureRandom random = new SecureRandom();
+        int num = random.nextInt(100000);
+        customer.setValidationOtp(String.format("%d", num));
+        // TODO: Send OTP here
+        customer = customerRepository.save(customer);
+        return ResponseEntity.ok().body(new RegisterResponse(customer.getId(), customer.getValidationOtp()));
+    }
+
+    // vendor register api
+    @PostMapping("customer/validate")
+    public ResponseEntity<VendorValidationResponse> validateCustomer(@RequestBody VendorValidateRequest vendorValidateRequest) throws NotFoundException {
+        Vendor vendor = vendorRepository.findById(vendorValidateRequest.getVendorId()).orElseThrow(() -> new NotFoundException("No such Vendor found!"));
+        if(vendor.getValidationOtp().equals(vendorValidateRequest.getOtp())) {
+            vendor.setValidated(true);
+            vendorRepository.save(vendor);
+            String jwtToken = jwtUtil.generateToken(vendor.getPhone());
+            return ResponseEntity.ok().body(new VendorValidationResponse(true, jwtToken));
+        }
+        return ResponseEntity.badRequest().body(new VendorValidationResponse(false, null));
+    }
+
+
+    // vendor register api
     @PostMapping("vendor/register")
-    public ResponseEntity<VendorRegisterResponse> signUpVendor(@RequestBody VendorSignUpRequest vendorSignUpRequest) {
+    public ResponseEntity<RegisterResponse> signUpVendor(@RequestBody VendorSignUpRequest vendorSignUpRequest) {
         Vendor vendor = new Vendor();
         vendor.setShopName(vendorSignUpRequest.getShopName());
         vendor.setPhone(vendorSignUpRequest.getPhoneNo());
@@ -34,7 +68,7 @@ public class PublicController {
         vendor.setValidationOtp(String.format("%d", num));
         // TODO: Send OTP here
         vendor = vendorRepository.save(vendor);
-        return ResponseEntity.ok().body(new VendorRegisterResponse(vendor.getId()));
+        return ResponseEntity.ok().body(new RegisterResponse(vendor.getId(), vendor.getValidationOtp()));
     }
 
     // vendor register api
