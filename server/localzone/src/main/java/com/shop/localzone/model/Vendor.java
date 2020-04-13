@@ -48,6 +48,9 @@ public class Vendor {
     @Column(name = "payment_by_upi")
     private Boolean paymentByUPI;
 
+    @Column(name = "payment_upi_address")
+    private String paymentUpiAddress;
+
     @Column(name = "delivery_by_pickup")
     private Boolean deliveryByPickup;
 
@@ -180,6 +183,14 @@ public class Vendor {
 
     public void setValidated(Boolean validated) {
         isValidated = validated;
+    }
+
+    public String getPaymentUpiAddress() {
+        return paymentUpiAddress;
+    }
+
+    public void setPaymentUpiAddress(String paymentUpiAddress) {
+        this.paymentUpiAddress = paymentUpiAddress;
     }
 }
 
