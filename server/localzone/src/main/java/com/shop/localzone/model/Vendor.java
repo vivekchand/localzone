@@ -1,6 +1,7 @@
 package com.shop.localzone.model;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name = "vendor")
@@ -56,6 +57,17 @@ public class Vendor {
 
     @Column(name = "delivery_by_partner")
     private Boolean deliveryByPartner;
+
+    @OneToMany(mappedBy="vendor")
+    private Set<VendorProductCategory> vendorProductCategories;
+
+    public void addVendorProductCategory(VendorProductCategory vendorProductCategory) {
+        vendorProductCategories.add(vendorProductCategory);
+    }
+
+    public Set<VendorProductCategory> getVendorProductCategories() {
+        return vendorProductCategories;
+    }
 
     public Long getId() {
         return id;
