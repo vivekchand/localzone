@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/app/")
@@ -63,8 +64,14 @@ public class VendorController {
         return ProductCategory.getValues();
     }
 
+    @GetMapping("vendor/preferredCategories")
+    public List<String> preferredCategories(Principal principal) throws NotFoundException {
+        Vendor vendor = vendorRepository.findByPhone(principal.getName()).orElseThrow(() -> new NotFoundException("No such Vendor found!"));
+        return vendor.getVendorProductCategories().stream().map(VendorProductCategory::getName).collect(Collectors.toList());
+    }
+
     @PostMapping("vendor/preferredCategories")
-    public void categories(Principal principal, @RequestBody ProductCategoriesRequest productCategoriesRequest) throws NotFoundException {
+    public void setPreferredCategories(Principal principal, @RequestBody ProductCategoriesRequest productCategoriesRequest) throws NotFoundException {
         Vendor vendor = vendorRepository.findByPhone(principal.getName()).orElseThrow(() -> new NotFoundException("No such Vendor found!"));
         for (String categoryName : productCategoriesRequest.getCategories()) {
             ProductCategory existingCategory;
