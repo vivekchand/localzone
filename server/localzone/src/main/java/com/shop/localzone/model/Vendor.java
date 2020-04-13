@@ -1,6 +1,7 @@
 package com.shop.localzone.model;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -60,6 +61,17 @@ public class Vendor {
 
     @OneToMany(mappedBy="vendor")
     private Set<VendorProductCategory> vendorProductCategories;
+
+    @OneToMany(mappedBy="vendor")
+    private Set<Product> products = new HashSet<>();
+
+    public void addProduct(Product product) {
+        products.add(product);
+    }
+
+    public Set<Product> getProducts() {
+        return products;
+    }
 
     public void addVendorProductCategory(VendorProductCategory vendorProductCategory) {
         vendorProductCategories.add(vendorProductCategory);

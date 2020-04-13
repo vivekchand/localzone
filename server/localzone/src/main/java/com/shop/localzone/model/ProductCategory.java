@@ -36,6 +36,6 @@ public enum ProductCategory {
 
     public static ProductCategory fromDisplayName(String displayName) {
         return Arrays.stream(ProductCategory.values()).filter(productCategory ->
-                productCategory.getDisplayName().equals(displayName)).findFirst().get();
+                productCategory.getDisplayName().equals(displayName)).findFirst().orElse(null);
     }
 }
