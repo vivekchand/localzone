@@ -6,10 +6,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-public class CustomUserDetails implements UserDetails {
+public class VendorUserDetails implements UserDetails {
     private Vendor vendor;
 
-    public CustomUserDetails(Vendor vendor) {
+    public VendorUserDetails(Vendor vendor) {
         this.vendor = vendor;
     }
 
@@ -25,7 +25,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return vendor.getPhone();
+        return "vendor#"+vendor.getId()+"#"+vendor.getPhone();
     }
 
     @Override

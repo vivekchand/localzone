@@ -9,8 +9,10 @@ import com.shop.localzone.repository.CustomerRepository;
 import com.shop.localzone.repository.VendorRepository;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.SecureRandom;
 import java.util.List;
@@ -31,6 +33,9 @@ public class PublicController {
     // customer register api
     @PostMapping("customer/register")
     public ResponseEntity<RegisterResponse> signUpCustomer(@RequestBody CustomerRequest customerRequest) {
+        if(customerRepository.findByPhone(customerRequest.getPhone()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Phone number already in use by a customer! Please login.");
+        }
         Customer customer = new Customer();
         customer.setName(customerRequest.getName());
         customer.setPhone(customerRequest.getPhone());
@@ -50,7 +55,7 @@ public class PublicController {
         if(customer.getValidationOtp().equals(customerValidateRequest.getOtp())) {
             customer.setValidated(true);
             customerRepository.save(customer);
-            String jwtToken = jwtUtil.generateToken(customer.getPhone());
+            String jwtToken = jwtUtil.generateToken("customer#"+customer.getId()+"#"+customer.getPhone());
             return ResponseEntity.ok().body(new VendorValidationResponse(true, jwtToken));
         }
         return ResponseEntity.badRequest().body(new VendorValidationResponse(false, null));
@@ -60,6 +65,9 @@ public class PublicController {
     // vendor register api
     @PostMapping("vendor/register")
     public ResponseEntity<RegisterResponse> signUpVendor(@RequestBody VendorSignUpRequest vendorSignUpRequest) {
+        if(customerRepository.findByPhone(vendorSignUpRequest.getPhoneNo()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Phone number already in use by a vendor! Please login.");
+        }
         Vendor vendor = new Vendor();
         vendor.setShopName(vendorSignUpRequest.getShopName());
         vendor.setPhone(vendorSignUpRequest.getPhoneNo());
@@ -78,7 +86,7 @@ public class PublicController {
         if(vendor.getValidationOtp().equals(vendorValidateRequest.getOtp())) {
             vendor.setValidated(true);
             vendorRepository.save(vendor);
-            String jwtToken = jwtUtil.generateToken(vendor.getPhone());
+            String jwtToken = jwtUtil.generateToken("vendor#"+vendor.getId()+"#"+vendor.getPhone());
             return ResponseEntity.ok().body(new VendorValidationResponse(true, jwtToken));
         }
         return ResponseEntity.badRequest().body(new VendorValidationResponse(false, null));

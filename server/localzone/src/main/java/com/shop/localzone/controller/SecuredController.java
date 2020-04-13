@@ -1,9 +1,6 @@
 package com.shop.localzone.controller;
 
-import com.shop.localzone.entity.ProductCategoriesRequest;
-import com.shop.localzone.entity.ProductRequest;
-import com.shop.localzone.entity.ProductResponse;
-import com.shop.localzone.entity.VendorDetailsRequest;
+import com.shop.localzone.entity.*;
 import com.shop.localzone.model.*;
 import com.shop.localzone.repository.ProductImageRepository;
 import com.shop.localzone.repository.ProductRepository;
@@ -36,20 +33,20 @@ public class SecuredController {
 
     // list vendors
     @GetMapping("vendor")
-    public List<Vendor> getAllVendors() {
-        return vendorRepository.findAll();
+    public List<VendorResponse> getAllVendors() {
+        return vendorRepository.findAll().stream().map(VendorResponse::new).collect(Collectors.toList());
     }
 
     // get vendor by id
     @GetMapping("vendor/{id}")
-    public ResponseEntity<Vendor> getVendor(@PathVariable("id") Long id) throws NotFoundException {
+    public ResponseEntity<VendorResponse> getVendor(@PathVariable("id") Long id) throws NotFoundException {
         Vendor vendor = vendorRepository.findById(id).orElseThrow(() -> new NotFoundException("No such Vendor"));
-        return ResponseEntity.ok().body(vendor);
+        return ResponseEntity.ok().body(new VendorResponse(vendor));
     }
 
     // vendor details api
     @PostMapping("vendor/details")
-    public ResponseEntity<Vendor> vendorDetails(Principal principal, @RequestBody VendorDetailsRequest vendorDetailsRequest) throws NotFoundException {
+    public ResponseEntity<VendorResponse> vendorDetails(Principal principal, @RequestBody VendorDetailsRequest vendorDetailsRequest) throws NotFoundException {
         Vendor vendor = vendorRepository.findByPhone(principal.getName()).orElseThrow(() -> new NotFoundException("No such Vendor found!"));
         vendor.setAddressCity(vendorDetailsRequest.getAddress().getCity());
         vendor.setAddressState(vendorDetailsRequest.getAddress().getState());
@@ -68,7 +65,7 @@ public class SecuredController {
             vendor.setDeliveryByPartner(vendorDetailsRequest.getDeliveryPreferences().getDeliveryByPartner());
         }
         vendorRepository.save(vendor);
-        return ResponseEntity.ok().body(vendor);
+        return ResponseEntity.ok().body(new VendorResponse(vendor));
     }
 
     @GetMapping("vendor/defaultCategories")
