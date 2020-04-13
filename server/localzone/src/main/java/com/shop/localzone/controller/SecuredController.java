@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/app/")
-public class VendorController {
+public class SecuredController {
 
     @Autowired
     private VendorRepository vendorRepository;
@@ -121,5 +121,11 @@ public class VendorController {
         vendorProductCategoryRepository.save(vendorProductCategory);
         vendorRepository.save(vendor);
         return ResponseEntity.ok().body(new ProductResponse(product));
+    }
+
+    @GetMapping("vendor/product")
+    public List<ProductResponse> getProducts(Principal principal) throws NotFoundException {
+        Vendor vendor = vendorRepository.findByPhone(principal.getName()).orElseThrow(() -> new NotFoundException("No such Vendor found!"));
+        return vendor.getProducts().stream().map(ProductResponse::new).collect(Collectors.toList());
     }
 }

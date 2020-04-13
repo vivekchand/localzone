@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 public class ProductResponse {
     private Long id;
+    private Long vendorId;
     private String name;
     private String description;
     private Float ratePerUnit;
@@ -17,6 +18,7 @@ public class ProductResponse {
 
     public ProductResponse(Product product) {
         this.id = product.getId();
+        this.vendorId = product.getVendor().getId();
         this.name = product.getName();
         this.description = product.getDescription();
         this.ratePerUnit = product.getRatePerUnit();
@@ -36,6 +38,10 @@ public class ProductResponse {
 
     public String getCategory() {
         return category;
+    }
+
+    public Long getVendorId() {
+        return vendorId;
     }
 
     public String getDescription() {
