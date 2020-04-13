@@ -13,10 +13,10 @@ public class VendorSignUpRequest {
     }
 
     public String getPhoneNo() {
-        return shopName;
+        return phoneNo;
     }
 
     public String getShopName() {
-        return phoneNo;
+        return shopName;
     }
 }

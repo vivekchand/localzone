@@ -1,5 +1,6 @@
 package com.shop.localzone.controller;
 
+import com.shop.localzone.JwtUtil;
 import com.shop.localzone.entity.VendorRegisterResponse;
 import com.shop.localzone.entity.VendorSignUpRequest;
 import com.shop.localzone.entity.VendorValidateRequest;
@@ -19,6 +20,9 @@ import java.security.SecureRandom;
 @RestController
 @RequestMapping("/")
 public class VendorOnboardController {
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @Autowired
     private VendorRepository vendorRepository;
 
@@ -43,8 +47,8 @@ public class VendorOnboardController {
         if(vendor.getValidationOtp().equals(vendorValidateRequest.getOtp())) {
             vendor.setValidated(true);
             vendorRepository.save(vendor);
-//            String jwtToken = jwtUtil.generateToken(vendor.getPhone());
-            return ResponseEntity.ok().body(new VendorValidationResponse(true, null));
+            String jwtToken = jwtUtil.generateToken(vendor.getPhone());
+            return ResponseEntity.ok().body(new VendorValidationResponse(true, jwtToken));
         }
         return ResponseEntity.badRequest().body(new VendorValidationResponse(false, null));
     }
