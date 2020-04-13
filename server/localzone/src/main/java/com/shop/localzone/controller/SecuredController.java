@@ -58,11 +58,15 @@ public class SecuredController {
         vendor.setAddressLine1(vendorDetailsRequest.getAddress().getAddressLine1());
         vendor.setAddressLine2(vendorDetailsRequest.getAddress().getAddressLine2());
         vendor.setAddressLine3(vendorDetailsRequest.getAddress().getAddressLine3());
-        vendor.setPaymentByCash(vendorDetailsRequest.getPaymentPreferences().getPayByCash());
-        vendor.setPaymentByUPI(vendorDetailsRequest.getPaymentPreferences().getPayByUpi());
-        vendor.setPaymentUpiAddress(vendorDetailsRequest.getPaymentPreferences().getUpiAddress());
-        vendor.setDeliveryByPickup(vendorDetailsRequest.getDeliveryPreferences().getDeliveryByPickup());
-        vendor.setDeliveryByPartner(vendorDetailsRequest.getDeliveryPreferences().getDeliveryByPartner());
+        if (vendorDetailsRequest.getPaymentPreferences() != null) {
+            vendor.setPaymentByCash(vendorDetailsRequest.getPaymentPreferences().getPayByCash());
+            vendor.setPaymentByUPI(vendorDetailsRequest.getPaymentPreferences().getPayByUpi());
+            vendor.setPaymentUpiAddress(vendorDetailsRequest.getPaymentPreferences().getUpiAddress());
+        }
+        if(vendorDetailsRequest.getDeliveryPreferences()!=null) {
+            vendor.setDeliveryByPickup(vendorDetailsRequest.getDeliveryPreferences().getDeliveryByPickup());
+            vendor.setDeliveryByPartner(vendorDetailsRequest.getDeliveryPreferences().getDeliveryByPartner());
+        }
         vendorRepository.save(vendor);
         return ResponseEntity.ok().body(vendor);
     }
@@ -83,7 +87,7 @@ public class SecuredController {
         Vendor vendor = vendorRepository.findByPhone(principal.getName()).orElseThrow(() -> new NotFoundException("No such Vendor found!"));
         for (String categoryName : productCategoriesRequest.getCategories()) {
             ProductCategory productCategory = ProductCategory.fromDisplayName(categoryName);
-            if(vendor.getVendorProductCategories().stream().noneMatch(vendorProductCategory -> vendorProductCategory.getName().equals(categoryName))) {
+            if (vendor.getVendorProductCategories().stream().noneMatch(vendorProductCategory -> vendorProductCategory.getName().equals(categoryName))) {
                 VendorProductCategory vendorProductCategory = new VendorProductCategory(vendor, productCategory, categoryName);
                 vendorProductCategoryRepository.save(vendorProductCategory);
                 vendor.addVendorProductCategory(vendorProductCategory);
@@ -108,7 +112,7 @@ public class SecuredController {
         product.setVendorProductCategory(vendorProductCategory);
         productRepository.save(product);
         productRepository.flush();
-        for(String base64EncodedImage: productRequest.getBase64EncodedImages()) {
+        for (String base64EncodedImage : productRequest.getBase64EncodedImages()) {
             ProductImage productImage = new ProductImage();
             productImage.setProduct(product);
             productImage.setBase64EncodedImage(base64EncodedImage);
