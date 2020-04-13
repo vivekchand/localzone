@@ -28,7 +28,7 @@ public class PublicController {
     @Autowired
     private VendorRepository vendorRepository;
 
-    // vendor register api
+    // customer register api
     @PostMapping("customer/register")
     public ResponseEntity<RegisterResponse> signUpCustomer(@RequestBody CustomerRequest customerRequest) {
         Customer customer = new Customer();
@@ -43,14 +43,14 @@ public class PublicController {
         return ResponseEntity.ok().body(new RegisterResponse(customer.getId(), customer.getValidationOtp()));
     }
 
-    // vendor register api
+    // customer validate api
     @PostMapping("customer/validate")
-    public ResponseEntity<VendorValidationResponse> validateCustomer(@RequestBody VendorValidateRequest vendorValidateRequest) throws NotFoundException {
-        Vendor vendor = vendorRepository.findById(vendorValidateRequest.getVendorId()).orElseThrow(() -> new NotFoundException("No such Vendor found!"));
-        if(vendor.getValidationOtp().equals(vendorValidateRequest.getOtp())) {
-            vendor.setValidated(true);
-            vendorRepository.save(vendor);
-            String jwtToken = jwtUtil.generateToken(vendor.getPhone());
+    public ResponseEntity<VendorValidationResponse> validateCustomer(@RequestBody CustomerValidateRequest customerValidateRequest) throws NotFoundException {
+        Customer customer = customerRepository.findById(customerValidateRequest.getCustomerId()).orElseThrow(() -> new NotFoundException("No such Customer found!"));
+        if(customer.getValidationOtp().equals(customerValidateRequest.getOtp())) {
+            customer.setValidated(true);
+            customerRepository.save(customer);
+            String jwtToken = jwtUtil.generateToken(customer.getPhone());
             return ResponseEntity.ok().body(new VendorValidationResponse(true, jwtToken));
         }
         return ResponseEntity.badRequest().body(new VendorValidationResponse(false, null));
@@ -71,7 +71,7 @@ public class PublicController {
         return ResponseEntity.ok().body(new RegisterResponse(vendor.getId(), vendor.getValidationOtp()));
     }
 
-    // vendor register api
+    // vendor validate api
     @PostMapping("vendor/validate")
     public ResponseEntity<VendorValidationResponse> validateVendor(@RequestBody VendorValidateRequest vendorValidateRequest) throws NotFoundException {
         Vendor vendor = vendorRepository.findById(vendorValidateRequest.getVendorId()).orElseThrow(() -> new NotFoundException("No such Vendor found!"));
